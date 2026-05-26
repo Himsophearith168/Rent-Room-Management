@@ -6,9 +6,7 @@ const bill = require("../controller/utilityBillController");
 
 router.get("/", bill.getBills);
 
-
 router.get("/:id", bill.getBillByID);
-
 
 router.post("/", bill.createBill);
 
