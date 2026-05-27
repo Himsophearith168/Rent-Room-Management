@@ -153,7 +153,6 @@ const updateUtilityBill = async (bill_id, data) => {
         electricity_old_reading,
         electricity_new_reading,
         electricity_price,
-
         water_old_reading,
         water_new_reading,
         water_price,

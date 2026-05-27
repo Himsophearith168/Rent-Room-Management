@@ -8,6 +8,7 @@ const crypto = require('crypto');
 
 const login = async (body) => {
     const { email, password } = body;
+    console.log(`Login attempt for email: ${email}`);
 
     const userInfo = await user.checkemail(email);
 

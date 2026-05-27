@@ -1,7 +1,7 @@
 const billModel = require("../models/utilityBillModel");
 
 const getBills = async () => {
-    return await billModel.getBills();
+    return await billModel.getAllUtilityBills();
 };
 
 const getBillByID = async (id) => {
@@ -9,7 +9,7 @@ const getBillByID = async (id) => {
         throw new Error("Bill ID is required");
     }
 
-    const data = await billModel.getBillByID(id);
+    const data = await billModel.getUtilityBillById(id);
 
     if (!data) {
         throw new Error("Bill not found");
@@ -18,46 +18,40 @@ const getBillByID = async (id) => {
     return data;
 };
 
-
 const createBill = async (body) => {
     const {
         room_id,
         tenant_id,
         month,
-        electricity_unit = 0,
+        electricity_old_reading = 0,
+        electricity_new_reading = 0,
         electricity_price = 0,
-        water_unit = 0,
+        water_old_reading = 0,
+        water_new_reading = 0,
         water_price = 0,
-        garbage_fee = 0
+        garbage_fee = 0,
+        status = "Pending"
     } = body;
 
     if (!room_id || !tenant_id || !month) {
-        throw new Error("room_id, tenant_id, month are required");
+        throw new Error("room_id, tenant_id, and month are required");
     }
 
-    const electricity_total = electricity_unit * electricity_price;
-    const water_total = water_unit * water_price;
-
-    const total_amount =
-        electricity_total +
-        water_total +
-        garbage_fee;
-
-    const data = await billModel.createBill({
+    const data = await billModel.createUtilityBill({
         room_id,
         tenant_id,
         month,
-        electricity_unit,
+        electricity_old_reading,
+        electricity_new_reading,
         electricity_price,
-        electricity_total,
-        water_unit,
+        water_old_reading,
+        water_new_reading,
         water_price,
-        water_total,
         garbage_fee,
-        total_amount
+        status
     });
 
-    return await billModel.getBillByID(data.insertId);
+    return await billModel.getUtilityBillById(data.insertId);
 };
 
 const updateBill = async (id, body) => {
@@ -65,38 +59,31 @@ const updateBill = async (id, body) => {
         throw new Error("Bill ID is required");
     }
 
-    const existing = await billModel.getBillByID(id);
+    const existing = await billModel.getUtilityBillById(id);
 
     if (!existing) {
         throw new Error("Bill not found");
     }
 
     const {
-        electricity_unit = 0,
-        electricity_price = 0,
-        water_unit = 0,
-        water_price = 0,
-        garbage_fee = 0,
-        status
+        electricity_old_reading = existing.electricity_old_reading,
+        electricity_new_reading = existing.electricity_new_reading,
+        electricity_price = existing.electricity_price,
+        water_old_reading = existing.water_old_reading,
+        water_new_reading = existing.water_new_reading,
+        water_price = existing.water_price,
+        garbage_fee = existing.garbage_fee,
+        status = existing.status
     } = body;
 
-    const electricity_total = electricity_unit * electricity_price;
-    const water_total = water_unit * water_price;
-
-    const total_amount =
-        electricity_total +
-        water_total +
-        garbage_fee;
-
-    const result = await billModel.updateBill(id, {
-        electricity_unit,
+    const result = await billModel.updateUtilityBill(id, {
+        electricity_old_reading,
+        electricity_new_reading,
         electricity_price,
-        electricity_total,
-        water_unit,
+        water_old_reading,
+        water_new_reading,
         water_price,
-        water_total,
         garbage_fee,
-        total_amount,
         status
     });
 
@@ -104,7 +91,7 @@ const updateBill = async (id, body) => {
         throw new Error("Update failed");
     }
 
-    return await billModel.getBillByID(id);
+    return await billModel.getUtilityBillById(id);
 };
 
 const deleteBill = async (id) => {
@@ -112,13 +99,13 @@ const deleteBill = async (id) => {
         throw new Error("Bill ID is required");
     }
 
-    const existing = await billModel.getBillByID(id);
+    const existing = await billModel.getUtilityBillById(id);
 
     if (!existing) {
         throw new Error("Bill not found");
     }
 
-    return await billModel.deleteBill(id);
+    return await billModel.deleteUtilityBill(id);
 };
 
 module.exports = {

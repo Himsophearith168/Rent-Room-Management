@@ -69,14 +69,20 @@ const createTenantByAdmin = async (body) => {
 };
 
 const updateUser = async (id, body) => {
-    const { username, email, role } = body;
+    const { username, email, role, password } = body;
 
-    const [result] = await pool.query(
-        `UPDATE users 
-         SET username = ?, email = ?, role = ?
-         WHERE user_id = ?`,
-        [username, email, role, id]
-    );
+    let query = `UPDATE users SET username = ?, email = ?, role = ?`;
+    let params = [username, email, role];
+
+    if (password) {
+        query += `, password = ?`;
+        params.push(password);
+    }
+
+    query += ` WHERE user_id = ?`;
+    params.push(id);
+
+    const [result] = await pool.query(query, params);
 
     return result.affectedRows; 
 };
