@@ -10,7 +10,6 @@ const getAssignments = async () => {
             ra.tenant_id,
             t.fullname,
             ra.start_date,
-            ra.end_date,
             ra.status
         FROM room_assignments ra
         JOIN rooms r ON ra.room_id = r.room_id
@@ -30,7 +29,6 @@ const getAssignmentByID = async (id) => {
             ra.tenant_id,
             t.fullname,
             ra.start_date,
-            ra.end_date,
             ra.status
         FROM room_assignments ra
         JOIN rooms r ON ra.room_id = r.room_id
@@ -47,19 +45,17 @@ const createAssignment = async (body) => {
         room_id,
         tenant_id,
         start_date,
-        end_date,
         status
     } = body;
 
     const [result] = await pool.query(`
         INSERT INTO room_assignments
-        (room_id, tenant_id, start_date, end_date, status)
-        VALUES (?, ?, ?, ?, ?)
+        (room_id, tenant_id, start_date, status)
+        VALUES (?, ?, ?, ?)
     `, [
         room_id,
         tenant_id,
         start_date,
-        end_date || null,
         status || "Active"
     ]);
 
@@ -71,19 +67,17 @@ const updateAssignment = async (id, body) => {
         room_id,
         tenant_id,
         start_date,
-        end_date,
         status
     } = body;
 
     const [result] = await pool.query(`
         UPDATE room_assignments
-        SET room_id = ?, tenant_id = ?, start_date = ?, end_date = ?, status = ?
+        SET room_id = ?, tenant_id = ?, start_date = ?, status = ?
         WHERE assignment_id = ?
     `, [
         room_id,
         tenant_id,
         start_date,
-        end_date,
         status,
         id
     ]);

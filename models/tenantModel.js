@@ -17,7 +17,6 @@ const getTenantByID = async (id) => {
 
 const createTenant = async (body) => {
     const {
-        user_id,
         fullname,
         phone,
         telegram,
@@ -27,9 +26,9 @@ const createTenant = async (body) => {
 
     const [result] = await pool.query(
         `INSERT INTO tenants
-        (user_id, fullname, phone, telegram, id_card, address)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [user_id || null, fullname, phone, telegram, id_card, address]
+        (fullname, phone, telegram, id_card, address)
+        VALUES (?, ?, ?, ?, ?)`,
+        [fullname, phone, telegram, id_card, address]
     );
 
     return result;
