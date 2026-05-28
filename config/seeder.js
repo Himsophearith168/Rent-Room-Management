@@ -4,9 +4,9 @@ const bcrypt = require("bcryptjs");
 const seedAdmin = async () => {
     try {
         console.log("Checking for Admin account...");
-        const email = process.env.ADMIN_EMAIL || "dmin@gmail.com";
-        const password = process.env.ADMIN_PASSWORD || "admin123";
-        const username = process.env.ADMIN_USERNAME || "admin";
+        const email = process.env.ADMIN_EMAIL || "sophearith@gmail.com";
+        const password = process.env.ADMIN_PASSWORD || "Rith@@11";
+        const username = process.env.ADMIN_USERNAME || "sophearith";
 
         const existingUsers = await userModel.checkemail(email);
 
