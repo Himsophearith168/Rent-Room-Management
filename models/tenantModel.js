@@ -1,8 +1,7 @@
 const pool = require("../config/database");
 
-
 const getTenant = async () => {
-    const [result] = await pool.query("SELECT * FROM tenants");
+    const [result] = await pool.query("SELECT * FROM tenants ORDER BY fullname ASC");
     return result;
 };
 
@@ -11,24 +10,32 @@ const getTenantByID = async (id) => {
         "SELECT * FROM tenants WHERE tenant_id = ?",
         [id]
     );
-
     return result[0];
 };
 
 const createTenant = async (body) => {
     const {
         fullname,
+        gender,
         phone,
         telegram,
         id_card,
+        emergency_contact,
         address
     } = body;
 
     const [result] = await pool.query(
-        `INSERT INTO tenants
-        (fullname, phone, telegram, id_card, address)
-        VALUES (?, ?, ?, ?, ?)`,
-        [fullname, phone, telegram, id_card, address]
+        `INSERT INTO tenants (fullname, gender, phone, telegram, id_card, emergency_contact, address)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+            fullname,
+            gender || null,
+            phone || null,
+            telegram || null,
+            id_card || null,
+            emergency_contact || null,
+            address || null
+        ]
     );
 
     return result;
@@ -37,17 +44,19 @@ const createTenant = async (body) => {
 const updateTenant = async (id, body) => {
     const {
         fullname,
+        gender,
         phone,
         telegram,
         id_card,
+        emergency_contact,
         address
     } = body;
 
     const [result] = await pool.query(
         `UPDATE tenants
-         SET fullname = ?, phone = ?, telegram = ?, id_card = ?, address = ?
+         SET fullname = ?, gender = ?, phone = ?, telegram = ?, id_card = ?, emergency_contact = ?, address = ?
          WHERE tenant_id = ?`,
-        [fullname, phone, telegram, id_card, address, id]
+        [fullname, gender, phone, telegram, id_card, emergency_contact, address, id]
     );
 
     return result;
@@ -58,7 +67,6 @@ const deleteTenant = async (id) => {
         "DELETE FROM tenants WHERE tenant_id = ?",
         [id]
     );
-
     return result;
 };
 

@@ -1,11 +1,9 @@
 const pool = require("../config/database");
 
-
 const getRoom = async () => {
-    const [result] = await pool.query("SELECT * FROM rooms");
+    const [result] = await pool.query("SELECT * FROM rooms ORDER BY room_number ASC");
     return result;
 };
-
 
 const getRoomByID = async (id) => {
     const [result] = await pool.query(
@@ -16,38 +14,54 @@ const getRoomByID = async (id) => {
 };
 
 const createRoom = async (body) => {
-    const { room_number, price, status } = body;
+    const {
+        room_number,
+        room_price,
+        floor_number,
+        description,
+        status
+    } = body;
 
     const [result] = await pool.query(
-        "INSERT INTO rooms (room_number, price, status) VALUES (?, ?, ?)",
-        [room_number, price, status || "Available"]
+        `INSERT INTO rooms (room_number, room_price, floor_number, description, status)
+         VALUES (?, ?, ?, ?, ?)`,
+        [
+            room_number,
+            room_price,
+            floor_number || null,
+            description || null,
+            status || "Available"
+        ]
     );
 
     return result;
 };
 
-
 const updateRoom = async (id, body) => {
-    const { room_number, price, status } = body;
+    const {
+        room_number,
+        room_price,
+        floor_number,
+        description,
+        status
+    } = body;
 
     const [result] = await pool.query(
         `UPDATE rooms
-         SET room_number = ?, price = ?, status = ?
+         SET room_number = ?, room_price = ?, floor_number = ?, description = ?, status = ?
          WHERE room_id = ?`,
-        [room_number, price, status, id]
+        [room_number, room_price, floor_number, description, status, id]
     );
 
     return result;
 };
-
 
 const deleteRoom = async (id) => {
     const [result] = await pool.query(
         "DELETE FROM rooms WHERE room_id = ?",
         [id]
     );
-
-
+    return result;
 };
 
 module.exports = {

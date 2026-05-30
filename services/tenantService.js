@@ -1,74 +1,55 @@
-const tenantModel = require("../models/tenantModel");
+const tenantModel = require("../models/Tenantmodel");
 
-// Get all tenants
 const getTenant = async () => {
     return await tenantModel.getTenant();
 };
 
-// Get tenant by ID
 const getTenantByID = async (id) => {
-    if (!id) {
-        throw new Error("Tenant ID is required");
-    }
+    if (!id) throw new Error("Tenant ID is required");
 
     const tenant = await tenantModel.getTenantByID(id);
-
-    if (!tenant) {
-        throw new Error("Tenant not found");
-    }
+    if (!tenant) throw new Error("Tenant not found");
 
     return tenant;
 };
 
-// Create tenant
 const createTenant = async (body) => {
     const { fullname } = body;
 
-    if (!fullname) {
-        throw new Error("Fullname is required");
-    }
+    if (!fullname) throw new Error("fullname is required");
 
     const data = await tenantModel.createTenant(body);
-
-    if (!data.insertId) {
-        throw new Error("Create tenant failed");
-    }
+    if (!data.insertId) throw new Error("Failed to create tenant");
 
     return await tenantModel.getTenantByID(data.insertId);
 };
 
-// Update tenant
 const updateTenant = async (id, body) => {
-    if (!id) {
-        throw new Error("Tenant ID is required");
-    }
+    if (!id) throw new Error("Tenant ID is required");
 
     const tenant = await tenantModel.getTenantByID(id);
+    if (!tenant) throw new Error("Tenant not found");
 
-    if (!tenant) {
-        throw new Error("Tenant not found");
-    }
+    const result = await tenantModel.updateTenant(id, {
+        fullname: body.fullname || tenant.fullname,
+        gender: body.gender ?? tenant.gender,
+        phone: body.phone ?? tenant.phone,
+        telegram: body.telegram ?? tenant.telegram,
+        id_card: body.id_card ?? tenant.id_card,
+        emergency_contact: body.emergency_contact ?? tenant.emergency_contact,
+        address: body.address ?? tenant.address
+    });
 
-    const result = await tenantModel.updateTenant(id, body);
-
-    if (result.affectedRows === 0) {
-        throw new Error("Update failed");
-    }
+    if (result.affectedRows === 0) throw new Error("Update failed");
 
     return await tenantModel.getTenantByID(id);
 };
 
-// Delete tenant
 const deleteTenant = async (id) => {
-    if (!id) {
-        throw new Error("Tenant ID is required");
-    }
+    if (!id) throw new Error("Tenant ID is required");
 
     const tenant = await tenantModel.getTenantByID(id);
-
-    if (!tenant) {
-        throw new Error("Tenant not found");
-    }
+    if (!tenant) throw new Error("Tenant not found");
 
     return await tenantModel.deleteTenant(id);
 };

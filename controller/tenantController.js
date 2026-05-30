@@ -1,108 +1,48 @@
-const tenantService = require("../services/tenantService");
+const tenantService = require("../services/TenantService");
 
 const getTenant = async (req, res) => {
     try {
-        const result = await tenantService.getTenant();
-
-        return res.json({
-            success: true,
-            data: result
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        const data = await tenantService.getTenant();
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
 
 const getTenantByID = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await tenantService.getTenantByID(id);
-
-        return res.json({
-            success: true,
-            data: result
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        const data = await tenantService.getTenantByID(req.params.id);
+        res.json(data);
+    } catch (err) {
+        res.status(404).json({ message: err.message });
     }
 };
 
-
 const createTenant = async (req, res) => {
     try {
-        const body = { ...req.body };
-
-        if (req.file) {
-            body.id_card = `images/${req.file.filename}`;
-        }
-
-        const result = await tenantService.createTenant(body);
-
-        return res.json({
-            success: true,
-            data: result
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        const data = await tenantService.createTenant(req.body);
+        res.status(201).json(data);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 };
 
 const updateTenant = async (req, res) => {
     try {
-        const id = req.params.id;
-        const body = { ...req.body };
-
-        if (req.file) {
-            body.id_card = `images/${req.file.filename}`;
-        }
-
-        const result = await tenantService.updateTenant(id, body);
-
-        return res.json({
-            success: true,
-            data: result
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        const data = await tenantService.updateTenant(req.params.id, req.body);
+        res.json(data);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 };
-
 
 const deleteTenant = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await tenantService.deleteTenant(id);
-
-        return res.json({
-            success: true,
-            data: result
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        await tenantService.deleteTenant(req.params.id);
+        res.json({ message: "Tenant deleted" });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 };
 
-module.exports = {
-    getTenant,
-    getTenantByID,
-    createTenant,
-    updateTenant,
-    deleteTenant
-};
+module.exports = { getTenant, getTenantByID, createTenant, updateTenant, deleteTenant };
