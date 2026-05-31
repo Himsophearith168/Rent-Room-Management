@@ -1,10 +1,8 @@
-const billService = require("../services/utilityBillService");
+const utilityRateService = require("../services/UtilityRateService");
 
-
-const getBills = async (req, res) => {
+const getUtilityRates = async (req, res) => {
     try {
-        const result = await billService.getBills();
-
+        const result = await utilityRateService.getUtilityRates();
         return res.json({
             success: true,
             data: result
@@ -17,13 +15,9 @@ const getBills = async (req, res) => {
     }
 };
 
-
-const getBillByID = async (req, res) => {
+const getActiveRates = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await billService.getBillByID(id);
-
+        const result = await utilityRateService.getActiveRates();
         return res.json({
             success: true,
             data: result
@@ -36,54 +30,45 @@ const getBillByID = async (req, res) => {
     }
 };
 
-
-const createBill = async (req, res) => {
+const createUtilityRate = async (req, res) => {
     try {
-        const result = await billService.createBill(req.body);
-
-        return res.json({
+        const result = await utilityRateService.createUtilityRate(req.body);
+        return res.status(201).json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const updateBill = async (req, res) => {
+const updateUtilityRate = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await billService.updateBill(id, req.body);
-
+        const result = await utilityRateService.updateUtilityRate(req.params.id, req.body);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "Utility rate not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-
-const deleteBill = async (req, res) => {
+const deleteUtilityRate = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await billService.deleteBill(id);
-
+        await utilityRateService.deleteUtilityRate(req.params.id);
         return res.json({
             success: true,
-            data: result
+            message: "Utility rate deleted successfully"
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "Utility rate not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
@@ -91,9 +76,9 @@ const deleteBill = async (req, res) => {
 };
 
 module.exports = {
-    getBills,
-    getBillByID,
-    createBill,
-    updateBill,
-    deleteBill
+    getUtilityRates,
+    getActiveRates,
+    createUtilityRate,
+    updateUtilityRate,
+    deleteUtilityRate
 };

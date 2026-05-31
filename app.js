@@ -12,6 +12,8 @@ var tenant = require("./routes/tenantroute")
 var roomAssign = require("./routes/roomAssign")
 var utility = require("./routes/utilityBillRoute")
 var utilityMeter = require("./routes/utilityMeterRoute")
+var utilityType = require("./routes/utilityTypeRoute")
+var billDetail = require("./routes/billDetail")
 var payment = require("./routes/payment")
 var invoice = require("./routes/invoice")
 var auth = require("./middlewares/auth")
@@ -42,6 +44,8 @@ app.use('/tenant', tenant);
 app.use('/roomAssign', roomAssign);
 app.use('/utility', utility);
 app.use('/utilityMeter', utilityMeter);
+app.use('/utilityType', utilityType);
+app.use('/billDetail', billDetail);
 app.use('/payment', payment);
 app.use('/invoice', invoice);
 

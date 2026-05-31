@@ -1,11 +1,9 @@
 const userService = require('../services/user');
-const authservice = require('../services/auth')
-
+const authService = require('../services/auth');
 
 const getUser = async (req, res) => {
     try {
         const result = await userService.getUser();
-
         return res.json({
             success: true,
             data: result
@@ -20,15 +18,13 @@ const getUser = async (req, res) => {
 
 const getUserByID = async (req, res) => {
     try {
-        const id = req.params.id;
-        const result = await userService.getUserbyID(id);
-
+        const result = await userService.getUserbyID(req.params.id);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "User not found" ? 404 : 500).json({
             success: false,
             message: error.message
         });
@@ -37,16 +33,13 @@ const getUserByID = async (req, res) => {
 
 const updateuser = async (req, res) => {
     try {
-        const id = req.params.id;
-        const body = req.body;
-        const result = await userService.updateuser(id, body);
-
+        const result = await userService.updateuser(req.params.id, req.body);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "User not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
@@ -55,29 +48,25 @@ const updateuser = async (req, res) => {
 
 const deleteuser = async (req, res) => {
     try {
-        const id = req.params.id;
-        const result = await userService.deleteuser(id);
-
+        await userService.deleteuser(req.params.id);
         return res.json({
             success: true,
-            data: result
+            message: "User deleted successfully"
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "User not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-
 const createTenantByAdmin = async (req, res) => {
     try {
         const result = await userService.createTenantByAdmin(req.body);
-
-        return res.json({
+        return res.status(201).json({
             success: true,
-            message: "Create Successfully",
+            message: "User created successfully",
             data: result
         });
     } catch (error) {
@@ -90,21 +79,18 @@ const createTenantByAdmin = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        let result = await authservice.login(req.body)
-
-        res.json({
-            result : true,
-            data : result
-        })
-        
+        const result = await authService.login(req.body);
+        return res.json({
+            success: true,
+            data: result
+        });
     } catch (error) {
-        console.log(error);
-        res.json({
-            result : false,
-            msg : error.message
-        })
+        return res.status(401).json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
 
 module.exports = {
     getUser,

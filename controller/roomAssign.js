@@ -1,10 +1,8 @@
-const assignmentService = require("../services/roomAssign");
-
+const roomAssignService = require("../services/RoomAssignService");
 
 const getAssignments = async (req, res) => {
     try {
-        const result = await assignmentService.getAssignments();
-
+        const result = await roomAssignService.getAssignments();
         return res.json({
             success: true,
             data: result
@@ -16,75 +14,76 @@ const getAssignments = async (req, res) => {
         });
     }
 };
-
 
 const getAssignmentByID = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await assignmentService.getAssignmentByID(id);
-
+        const result = await roomAssignService.getAssignmentByID(req.params.id);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "Assignment not found" ? 404 : 500).json({
             success: false,
             message: error.message
         });
     }
 };
-
 
 const createAssignment = async (req, res) => {
     try {
-        const result = await assignmentService.createAssignment(req.body);
-
-        return res.json({
+        const result = await roomAssignService.createAssignment(req.body);
+        return res.status(201).json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(400).json({
             success: false,
             message: error.message
         });
     }
 };
-
 
 const updateAssignment = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await assignmentService.updateAssignment(id, req.body);
-
+        const result = await roomAssignService.updateAssignment(req.params.id, req.body);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "Assignment not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-
-const deleteAssignment = async (req, res) => {
+const endAssignment = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const result = await assignmentService.deleteAssignment(id);
-
+        const result = await roomAssignService.endAssignment(req.params.id, req.body.end_date);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(error.message === "Assignment not found" ? 404 : 400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const deleteAssignment = async (req, res) => {
+    try {
+        await roomAssignService.deleteAssignment(req.params.id);
+        return res.json({
+            success: true,
+            message: "Assignment deleted successfully"
+        });
+    } catch (error) {
+        return res.status(error.message === "Assignment not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
@@ -96,5 +95,6 @@ module.exports = {
     getAssignmentByID,
     createAssignment,
     updateAssignment,
+    endAssignment,
     deleteAssignment
 };

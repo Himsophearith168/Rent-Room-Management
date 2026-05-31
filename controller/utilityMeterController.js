@@ -1,8 +1,8 @@
-const utilityMeterService = require("../services/utilityMeterService");
+const meterReadingService = require("../services/MetterReadingService");
 
-const getAllUtilityMeters = async (req, res) => {
+const getAllMeterReadings = async (req, res) => {
     try {
-        const result = await utilityMeterService.getAllUtilityMeters();
+        const result = await meterReadingService.getAllMeterReadings();
         return res.json({
             success: true,
             data: result
@@ -15,63 +15,91 @@ const getAllUtilityMeters = async (req, res) => {
     }
 };
 
-const getUtilityMeterByRoomId = async (req, res) => {
+const getMeterReadingsByRoom = async (req, res) => {
     try {
-        const room_id = req.params.room_id;
-        const result = await utilityMeterService.getUtilityMeterByRoomId(room_id);
+        const result = await meterReadingService.getMeterReadingsByRoom(req.params.room_id);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(error.message.includes("not found") ? 404 : 500).json({
+        return res.status(error.message === "Room not found" ? 404 : 500).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const createUtilityMeter = async (req, res) => {
+const getLatestReading = async (req, res) => {
     try {
-        const result = await utilityMeterService.createUtilityMeter(req.body);
+        const { room_id, utility_type_id } = req.query;
+        const result = await meterReadingService.getLatestReading(room_id, utility_type_id);
+        return res.json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        return res.status(error.message === "No meter reading found for this room and utility" ? 404 : 500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getMeterReadingByID = async (req, res) => {
+    try {
+        const result = await meterReadingService.getMeterReadingByID(req.params.id);
+        return res.json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        return res.status(error.message === "Meter reading not found" ? 404 : 500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const createMeterReading = async (req, res) => {
+    try {
+        const result = await meterReadingService.createMeterReading(req.body);
         return res.status(201).json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(error.message.includes("already exists") ? 400 : 500).json({
+        return res.status(400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const updateUtilityMeter = async (req, res) => {
+const updateMeterReading = async (req, res) => {
     try {
-        const room_id = req.params.room_id;
-        const result = await utilityMeterService.updateUtilityMeter(room_id, req.body);
+        const result = await meterReadingService.updateMeterReading(req.params.id, req.body);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(error.message.includes("not found") ? 404 : 500).json({
+        return res.status(error.message === "Meter reading not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const deleteUtilityMeter = async (req, res) => {
+const deleteMeterReading = async (req, res) => {
     try {
-        const room_id = req.params.room_id;
-        const result = await utilityMeterService.deleteUtilityMeter(room_id);
+        await meterReadingService.deleteMeterReading(req.params.id);
         return res.json({
             success: true,
-            message: "Utility meter record deleted successfully"
+            message: "Meter reading deleted successfully"
         });
     } catch (error) {
-        return res.status(error.message.includes("not found") ? 404 : 500).json({
+        return res.status(error.message === "Meter reading not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
@@ -79,9 +107,11 @@ const deleteUtilityMeter = async (req, res) => {
 };
 
 module.exports = {
-    getAllUtilityMeters,
-    getUtilityMeterByRoomId,
-    createUtilityMeter,
-    updateUtilityMeter,
-    deleteUtilityMeter
+    getAllMeterReadings,
+    getMeterReadingsByRoom,
+    getLatestReading,
+    getMeterReadingByID,
+    createMeterReading,
+    updateMeterReading,
+    deleteMeterReading
 };

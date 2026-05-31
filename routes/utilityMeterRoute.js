@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const utilityMeterController = require("../controller/utilityMeterController");
 
-router.get("/", utilityMeterController.getAllUtilityMeters);
-router.get("/:room_id", utilityMeterController.getUtilityMeterByRoomId);
-router.post("/", utilityMeterController.createUtilityMeter);
-router.put("/:room_id", utilityMeterController.updateUtilityMeter);
-router.delete("/:room_id", utilityMeterController.deleteUtilityMeter);
+const meter = require("../controller/utilityMeterController");
+
+router.get("/", meter.getAllMeterReadings);
+router.get("/latest", meter.getLatestReading);
+router.get("/room/:room_id", meter.getMeterReadingsByRoom);
+router.get("/:id", meter.getMeterReadingByID);
+router.post("/", meter.createMeterReading);
+router.put("/:id", meter.updateMeterReading);
+router.delete("/:id", meter.deleteMeterReading);
 
 module.exports = router;

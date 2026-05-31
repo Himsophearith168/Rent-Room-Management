@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const assignment = require("../controller/roomAssign");
+const roomAssign = require("../controller/roomAssign");
 
-
-router.get("/", assignment.getAssignments);
-
-router.get("/:id", assignment.getAssignmentByID);
-
-router.post("/", assignment.createAssignment);
-
-router.put("/:id", assignment.updateAssignment);
-
-router.delete("/:id", assignment.deleteAssignment);
+router.get("/", roomAssign.getAssignments);
+router.get("/:id", roomAssign.getAssignmentByID);
+router.post("/", roomAssign.createAssignment);
+router.put("/:id", roomAssign.updateAssignment);
+router.put("/:id/end", roomAssign.endAssignment);
+router.delete("/:id", roomAssign.deleteAssignment);
 
 module.exports = router;

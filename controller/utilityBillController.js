@@ -1,8 +1,8 @@
-const invoiceService = require("../services/InvoiceService");
+const billService = require("../services/Billservice");
 
-const getInvoices = async (req, res) => {
+const getBills = async (req, res) => {
     try {
-        const result = await invoiceService.getInvoices();
+        const result = await billService.getBills();
         return res.json({
             success: true,
             data: result
@@ -15,39 +15,39 @@ const getInvoices = async (req, res) => {
     }
 };
 
-const getInvoiceByID = async (req, res) => {
+const getBillByID = async (req, res) => {
     try {
-        const result = await invoiceService.getInvoiceByID(req.params.id);
+        const result = await billService.getBillByID(req.params.id);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(error.message === "Invoice not found" ? 404 : 500).json({
+        return res.status(error.message === "Bill not found" ? 404 : 500).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const getInvoiceFullDetail = async (req, res) => {
+const getBillsByAssignment = async (req, res) => {
     try {
-        const result = await invoiceService.getInvoiceFullDetail(req.params.id);
+        const result = await billService.getBillsByAssignment(req.params.assignment_id);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(error.message === "Invoice not found" ? 404 : 500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const createInvoice = async (req, res) => {
+const createBill = async (req, res) => {
     try {
-        const result = await invoiceService.createInvoice(req.body);
+        const result = await billService.createBill(req.body);
         return res.status(201).json({
             success: true,
             data: result
@@ -60,30 +60,30 @@ const createInvoice = async (req, res) => {
     }
 };
 
-const updateInvoice = async (req, res) => {
+const updateBill = async (req, res) => {
     try {
-        const result = await invoiceService.updateInvoice(req.params.id, req.body);
+        const result = await billService.updateBill(req.params.id, req.body);
         return res.json({
             success: true,
             data: result
         });
     } catch (error) {
-        return res.status(error.message === "Invoice not found" ? 404 : 400).json({
+        return res.status(error.message === "Bill not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
     }
 };
 
-const deleteInvoice = async (req, res) => {
+const deleteBill = async (req, res) => {
     try {
-        await invoiceService.deleteInvoice(req.params.id);
+        await billService.deleteBill(req.params.id);
         return res.json({
             success: true,
-            message: "Invoice deleted successfully"
+            message: "Bill deleted successfully"
         });
     } catch (error) {
-        return res.status(error.message === "Invoice not found" ? 404 : 400).json({
+        return res.status(error.message === "Bill not found" ? 404 : 400).json({
             success: false,
             message: error.message
         });
@@ -91,10 +91,10 @@ const deleteInvoice = async (req, res) => {
 };
 
 module.exports = {
-    getInvoices,
-    getInvoiceByID,
-    getInvoiceFullDetail,
-    createInvoice,
-    updateInvoice,
-    deleteInvoice
+    getBills,
+    getBillByID,
+    getBillsByAssignment,
+    createBill,
+    updateBill,
+    deleteBill
 };
