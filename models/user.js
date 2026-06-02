@@ -134,6 +134,13 @@ const deleteToken = async (token) => {
     return data;
 };
 
+const updatePassword = async (userId, hashedPassword) => {
+    const [result] = await pool.query(
+        `UPDATE users SET password = ? WHERE user_id = ?`,
+        [hashedPassword, userId]
+    );
+    return result.affectedRows;
+};
 
 module.exports = {
     getUser,
@@ -147,5 +154,6 @@ module.exports = {
     updateUser,
     deleteuser,
     displayuserandtoken,
-    deleteTokenByUser
+    deleteTokenByUser,
+    updatePassword
 };

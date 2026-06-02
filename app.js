@@ -11,6 +11,7 @@ var room = require("./routes/roomroute")
 var tenant = require("./routes/tenantroute")
 var roomAssign = require("./routes/roomAssign")
 var utility = require("./routes/utilityBillRoute")
+var utilityRate = require("./routes/utilityRateRoute")
 var utilityMeter = require("./routes/utilityMeterRoute")
 var utilityType = require("./routes/utilityTypeRoute")
 var billDetail = require("./routes/billDetail")
@@ -34,20 +35,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/login', authRoute);
+// Auth routes (no auth required)
+app.use('/', authRoute);
+app.use('/auth', authRoute);
 
-
-app.use(auth.isAdmin);
-app.use('/users', user);
-app.use('/room', room);
-app.use('/tenant', tenant);
-app.use('/roomAssign', roomAssign);
-app.use('/utility', utility);
-app.use('/utilityMeter', utilityMeter);
-app.use('/utilityType', utilityType);
-app.use('/billDetail', billDetail);
-app.use('/payment', payment);
-app.use('/invoice', invoice);
+// Protected routes with auth middleware
+app.use('/users', auth.isAdmin, user);
+app.use('/room', auth.isLogin, room);
+app.use('/tenant', auth.isLogin, tenant);
+app.use('/roomAssign', auth.isLogin, roomAssign);
+app.use('/bill', auth.isLogin, utility);
+app.use('/utilityRate', auth.isLogin, utilityRate);
+app.use('/utilityMeter', auth.isLogin, utilityMeter);
+app.use('/utilityType', auth.isLogin, utilityType);
+app.use('/billDetail', auth.isLogin, billDetail);
+app.use('/payment', auth.isLogin, payment);
+app.use('/invoice', auth.isLogin, invoice);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

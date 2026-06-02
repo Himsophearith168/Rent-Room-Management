@@ -104,17 +104,24 @@ const createBill = async (body) => {
  * Recalculates and updates total_amount = room_rent + sum(bill_details) + other_fee
  */
 const recalculateBillTotal = async (bill_id) => {
-    const [result] = await pool.query(`
-        UPDATE bills b
-        SET total_amount = (
-            SELECT b2.room_rent + COALESCE(SUM(bd.total_price), 0) + b2.other_fee
-            FROM bills b2
-            LEFT JOIN bill_details bd ON b2.bill_id = bd.bill_id
-            WHERE b2.bill_id = ?
-            GROUP BY b2.bill_id
-        )
+    const [rows] = await pool.query(`
+        SELECT
+            b.room_rent,
+            b.other_fee,
+            COALESCE(SUM(bd.total_price), 0) AS details_total
+        FROM bills b
+        LEFT JOIN bill_details bd ON b.bill_id = bd.bill_id
         WHERE b.bill_id = ?
-    `, [bill_id, bill_id]);
+        GROUP BY b.bill_id
+    `, [bill_id]);
+
+    const totals = rows[0] || { room_rent: 0, other_fee: 0, details_total: 0 };
+    const total_amount = Number(totals.room_rent || 0) + Number(totals.other_fee || 0) + Number(totals.details_total || 0);
+
+    const [result] = await pool.query(
+        `UPDATE bills SET total_amount = ? WHERE bill_id = ?`,
+        [total_amount, bill_id]
+    );
 
     return result;
 };

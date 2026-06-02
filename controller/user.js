@@ -92,10 +92,77 @@ const login = async (req, res) => {
     }
 };
 
+const register = async (req, res) => {
+    try {
+        const result = await authService.register(req.body);
+        return res.status(201).json({
+            success: true,
+            message: "Registration successful",
+            data: result
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const forgetPassword = async (req, res) => {
+    try {
+        const result = await authService.forgetPassword(req.body);
+        return res.json({
+            success: true,
+            message: "Password reset link sent to your email",
+            data: result
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const result = await authService.resetPassword(req.body);
+        return res.json({
+            success: true,
+            message: "Password reset successfully",
+            data: result
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const logout = async (req, res) => {
+    try {
+        await authService.logout(req.user.id);
+        return res.json({
+            success: true,
+            message: "Logout successful"
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     getUser,
     createTenantByAdmin,
     login,
+    register,
+    forgetPassword,
+    resetPassword,
+    logout,
     updateuser,
     deleteuser,
     getUserByID
